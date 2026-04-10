@@ -62,54 +62,142 @@ function calculateValue() {
 
     // 顯示報告
     document.getElementById('finalScore').textContent = finalScore;
+    createChart(salaryScore, timeScore, commuteScore, vacationScore, wfhScore, matchScore);
     document.getElementById('dimensions').innerHTML = `
         <div class="dimension">
             <div class="dimension-header">
                 <span class="emoji">💰</span>
                 薪資水平
             </div>
+            <div class="score-bar">
+                <div class="score-fill" style="width: ${salaryScore * 10}%; background: linear-gradient(90deg, #10b981, #34d399);"></div>
+            </div>
             <div class="comment">${getSalaryComment(salaryScore)}</div>
+            <div class="explanation">基於台灣平均年薪60萬元評估，考慮學歷和工作經驗的匹配度。</div>
         </div>
         <div class="dimension">
             <div class="dimension-header">
                 <span class="emoji">⏰</span>
                 工作時間
             </div>
+            <div class="score-bar">
+                <div class="score-fill" style="width: ${timeScore * 10}%; background: linear-gradient(90deg, #f59e0b, #fbbf24);"></div>
+            </div>
             <div class="comment">${getTimeComment(timeScore)}</div>
+            <div class="explanation">綜合每周工作天數、每日工時和通勤時間，與台灣平均水平比較。</div>
         </div>
         <div class="dimension">
             <div class="dimension-header">
                 <span class="emoji">🚗</span>
                 通勤成本
             </div>
+            <div class="score-bar">
+                <div class="score-fill" style="width: ${commuteScore * 10}%; background: linear-gradient(90deg, #ef4444, #f87171);"></div>
+            </div>
             <div class="comment">${getCommuteComment(commuteScore)}</div>
+            <div class="explanation">評估通勤時間對生活品質的影響，台灣平均通勤時間約1.5小時。</div>
         </div>
         <div class="dimension">
             <div class="dimension-header">
                 <span class="emoji">🏖️</span>
                 休假福利
             </div>
+            <div class="score-bar">
+                <div class="score-fill" style="width: ${vacationScore * 10}%; background: linear-gradient(90deg, #3b82f6, #60a5fa);"></div>
+            </div>
             <div class="comment">${getVacationComment(vacationScore)}</div>
+            <div class="explanation">基於特休天數評估，台灣勞工平均特休約7天。</div>
         </div>
         <div class="dimension">
             <div class="dimension-header">
                 <span class="emoji">🏠</span>
                 遠距工作
             </div>
+            <div class="score-bar">
+                <div class="score-fill" style="width: ${wfhScore * 10}%; background: linear-gradient(90deg, #8b5cf6, #a855f7);"></div>
+            </div>
             <div class="comment">${getWFHComment(wfhScore)}</div>
+            <div class="explanation">評估在家工作頻率，台灣平均每周約1天。</div>
         </div>
         <div class="dimension">
             <div class="dimension-header">
                 <span class="emoji">🎓</span>
                 學歷與經驗匹配
             </div>
+            <div class="score-bar">
+                <div class="score-fill" style="width: ${matchScore * 10}%; background: linear-gradient(90deg, #ec4899, #f472b6);"></div>
+            </div>
             <div class="comment">${getMatchComment(matchScore)}</div>
+            <div class="explanation">評估學歷背景與薪資、工作經驗的匹配程度。</div>
         </div>
     `;
     document.getElementById('report').style.display = 'block';
 }
 
-function getSalaryComment(score) {
+function createChart(salaryScore, timeScore, commuteScore, vacationScore, wfhScore, matchScore) {
+    const ctx = document.getElementById('scoreChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['薪資水平', '工作時間', '通勤成本', '休假福利', '遠距工作', '學歷匹配'],
+            datasets: [{
+                label: '您的評分',
+                data: [salaryScore, timeScore, commuteScore, vacationScore, wfhScore, matchScore],
+                fill: true,
+                backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                borderColor: 'rgba(139, 92, 246, 1)',
+                borderWidth: 2,
+                pointBackgroundColor: 'rgba(139, 92, 246, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(139, 92, 246, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: '各維度評分雷達圖',
+                    font: {
+                        size: 16,
+                        weight: 'bold'
+                    }
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 10,
+                    ticks: {
+                        stepSize: 2
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    angleLines: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    pointLabels: {
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
+            elements: {
+                line: {
+                    borderWidth: 2
+                }
+            }
+        }
+    });
+}
     if (score >= 8) return "薪資相當優渥，遠超台灣平均水平，工作價值感強烈。";
     if (score >= 6) return "薪資水平不錯，符合台灣中上層水準，性價比尚可。";
     if (score >= 4) return "薪資一般，與台灣平均相近，需要考慮其他福利。";
