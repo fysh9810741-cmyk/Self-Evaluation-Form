@@ -63,6 +63,9 @@ function calculateValue() {
     // 顯示報告
     document.getElementById('finalScore').textContent = finalScore;
     createChart(salaryScore, timeScore, commuteScore, vacationScore, wfhScore, matchScore);
+    showOverallAssessment(finalScore);
+    showImprovementSuggestions(salaryScore, timeScore, commuteScore, vacationScore, wfhScore, matchScore);
+    createImprovementSimulator(salaryScore, timeScore, commuteScore, vacationScore, wfhScore, matchScore, finalScore);
     document.getElementById('dimensions').innerHTML = `
         <div class="dimension">
             <div class="dimension-header">
@@ -198,6 +201,8 @@ function createChart(salaryScore, timeScore, commuteScore, vacationScore, wfhSco
         }
     });
 }
+
+function getSalaryComment(score) {
     if (score >= 8) return "薪資相當優渥，遠超台灣平均水平，工作價值感強烈。";
     if (score >= 6) return "薪資水平不錯，符合台灣中上層水準，性價比尚可。";
     if (score >= 4) return "薪資一般，與台灣平均相近，需要考慮其他福利。";
@@ -237,4 +242,291 @@ function getMatchComment(score) {
     if (score >= 6) return "學歷與經驗基本匹配，工作穩定性高。";
     if (score >= 4) return "學歷與經驗略有落差，建議持續學習提升。";
     return "學歷與經驗與薪資不匹配，可能存在發展瓶頸。";
+}
+
+function showOverallAssessment(finalScore) {
+    let assessmentClass = 'good';
+    let title = '🎯 工作性價比評估';
+    let text = '';
+
+    if (finalScore >= 8) {
+        assessmentClass = 'excellent';
+        title = '🌟 優秀的工作機會！';
+        text = '這份工作整體表現優異，薪資、工作時間、生活平衡各方面都很出色。建議繼續投入並積極發展職業生涯。';
+    } else if (finalScore >= 6) {
+        title = '👍 不錯的工作機會';
+        text = '這份工作整體表現良好，性價比尚可。雖然有些地方可以改進，但整體來說是值得投入的工作。';
+    } else if (finalScore >= 4) {
+        assessmentClass = 'poor';
+        title = '⚠️ 需要仔細考慮';
+        text = '這份工作性價比偏低，多個面向需要改進。建議評估是否值得長期投入，或考慮尋找更好的機會。';
+    } else {
+        assessmentClass = 'poor';
+        title = '❌ 建議重新評估';
+        text = '這份工作性價比很低，建議認真考慮轉換跑道或尋找更適合的工作機會。';
+    }
+
+    document.getElementById('overallAssessment').className = `overall-assessment ${assessmentClass}`;
+    document.getElementById('overallAssessment').innerHTML = `
+        <div class="assessment-title">${title}</div>
+        <div class="assessment-text">${text}</div>
+    `;
+}
+
+function showImprovementSuggestions(salaryScore, timeScore, commuteScore, vacationScore, wfhScore, matchScore) {
+    const suggestions = [];
+
+    if (salaryScore < 6) {
+        suggestions.push({
+            title: '💰 提升薪資水平',
+            content: '考慮與主管討論薪資調整，或尋找同行業更高薪的職缺。也可以通過提升技能來增加議價空間。'
+        });
+    }
+
+    if (timeScore < 6) {
+        suggestions.push({
+            title: '⏰ 優化工作時間',
+            content: '與主管討論工作負擔分配，或學習時間管理技巧。考慮是否可以減少加班或調整工作方式。'
+        });
+    }
+
+    if (commuteScore < 6) {
+        suggestions.push({
+            title: '🚗 改善通勤狀況',
+            content: '考慮搬遷到公司附近、改用更有效率的交通工具，或與公司討論遠距工作政策。'
+        });
+    }
+
+    if (vacationScore < 6) {
+        suggestions.push({
+            title: '🏖️ 增加休假天數',
+            content: '了解公司休假政策，積極使用特休假。與主管討論工作與生活的平衡。'
+        });
+    }
+
+    if (wfhScore < 6) {
+        suggestions.push({
+            title: '🏠 增加遠距工作',
+            content: '與主管討論遠距工作可能性，這不僅能減少通勤，還能提升工作效率。'
+        });
+    }
+
+    if (matchScore < 6) {
+        suggestions.push({
+            title: '🎓 提升專業能力',
+            content: '考慮進修相關技能、考取專業證照，或尋找更符合您背景的職位。'
+        });
+    }
+
+    if (suggestions.length === 0) {
+        suggestions.push({
+            title: '✨ 保持現狀並持續成長',
+            content: '您的表現已經很出色！建議繼續在現有崗位上精進技能，為未來發展做好準備。'
+        });
+    }
+
+    const suggestionsHtml = suggestions.map(suggestion => `
+        <div class="suggestion-item">
+            <h4>${suggestion.title}</h4>
+            <p>${suggestion.content}</p>
+        </div>
+    `).join('');
+
+    document.getElementById('improvementSuggestions').innerHTML = `
+        <div class="improvement-title">
+            <span class="emoji">🚀</span>
+            改進建議
+        </div>
+        ${suggestionsHtml}
+    `;
+}
+
+function createImprovementSimulator(originalSalaryScore, originalTimeScore, originalCommuteScore, originalVacationScore, originalWfhScore, originalMatchScore, originalFinalScore) {
+    document.getElementById('simulatorSection').innerHTML = `
+        <div class="simulator-title">
+            <span class="emoji">🔮</span>
+            模擬改進效果
+        </div>
+        <div class="simulator-controls">
+            <div class="control-item">
+                <div class="control-label">薪資提升</div>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="salarySlider" min="0" max="50" value="0" step="5">
+                    <span class="slider-value" id="salaryValue">0%</span>
+                </div>
+            </div>
+            <div class="control-item">
+                <div class="control-label">工作時間優化</div>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="timeSlider" min="0" max="50" value="0" step="5">
+                    <span class="slider-value" id="timeValue">0%</span>
+                </div>
+            </div>
+            <div class="control-item">
+                <div class="control-label">通勤改善</div>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="commuteSlider" min="0" max="50" value="0" step="5">
+                    <span class="slider-value" id="commuteValue">0%</span>
+                </div>
+            </div>
+            <div class="control-item">
+                <div class="control-label">休假增加</div>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="vacationSlider" min="0" max="50" value="0" step="5">
+                    <span class="slider-value" id="vacationValue">0%</span>
+                </div>
+            </div>
+            <div class="control-item">
+                <div class="control-label">遠距工作</div>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="wfhSlider" min="0" max="50" value="0" step="5">
+                    <span class="slider-value" id="wfhValue">0%</span>
+                </div>
+            </div>
+            <div class="control-item">
+                <div class="control-label">技能提升</div>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="matchSlider" min="0" max="50" value="0" step="5">
+                    <span class="slider-value" id="matchValue">0%</span>
+                </div>
+            </div>
+        </div>
+        <button class="simulate-btn" onclick="runSimulation()">模擬改進效果</button>
+        <div class="simulated-result" id="simulatedResult"></div>
+    `;
+
+    // 添加滑桿事件監聽器和實時反饋
+    const sliders = ['salary', 'time', 'commute', 'vacation', 'wfh', 'match'];
+    sliders.forEach(type => {
+        const slider = document.getElementById(`${type}Slider`);
+        const value = document.getElementById(`${type}Value`);
+        slider.addEventListener('input', function() {
+            value.textContent = this.value + '%';
+            // 實時更新視覺反饋
+            updateSliderFeedback(type, this.value);
+        });
+    });
+}
+
+function updateSliderFeedback(dimensionType, percentage) {
+    const valueLabel = document.getElementById(`${dimensionType}Value`);
+    // 根據改進幅度改變顏色
+    if (percentage >= 30) {
+        valueLabel.style.color = '#10b981'; // 綠色 - 顯著改進
+    } else if (percentage >= 15) {
+        valueLabel.style.color = '#f59e0b'; // 黃色 - 中等改進
+    } else if (percentage > 0) {
+        valueLabel.style.color = '#6b7280'; // 灰色 - 輕微改進
+    } else {
+        valueLabel.style.color = '#d1d5db'; // 淡灰色 - 無改進
+    }
+}
+
+function getOverallComment(score) {
+    if (score >= 9) return "🌟 優秀！工作機會極其難得，強烈建議長期投入並積極發展。";
+    if (score >= 8) return "💎 很好！工作整體表現優異，值得認真投入和珍惜。";
+    if (score >= 7) return "👍 不錯！工作性價比良好，有明確的發展前景。";
+    if (score >= 6) return "🟢 可以！工作整體尚可，但仍有改進空間。";
+    if (score >= 5) return "🟡 中等。工作性價比普通，建議評估是否長期投入。";
+    if (score >= 4) return "🟠 較差。工作存在明顯劣勢，需要認真權衡。";
+    if (score >= 3) return "🔴 不佳。工作價值偏低，建議尋找更好的機會。";
+    return "❌ 非常不佳。強烈建議立即尋找其他工作機會。";
+}
+
+function runSimulation() {
+    const originalScores = {
+        salary: arguments[0],
+        time: arguments[1],
+        commute: arguments[2],
+        vacation: arguments[3],
+        wfh: arguments[4],
+        match: arguments[5]
+    };
+    const originalFinalScore = arguments[6];
+
+    const improvements = {
+        salary: parseInt(document.getElementById('salarySlider').value) / 100,
+        time: parseInt(document.getElementById('timeSlider').value) / 100,
+        commute: parseInt(document.getElementById('commuteSlider').value) / 100,
+        vacation: parseInt(document.getElementById('vacationSlider').value) / 100,
+        wfh: parseInt(document.getElementById('wfhSlider').value) / 100,
+        match: parseInt(document.getElementById('matchSlider').value) / 100
+    };
+
+    // 計算模擬後的分數
+    const simulatedScores = {};
+    Object.keys(originalScores).forEach(key => {
+        simulatedScores[key] = Math.min(10, originalScores[key] * (1 + improvements[key]));
+    });
+
+    // 計算新的最終分數
+    const simulatedFinalScore = Math.round((
+        simulatedScores.salary * 0.3 +
+        simulatedScores.time * 0.2 +
+        simulatedScores.commute * 0.15 +
+        simulatedScores.vacation * 0.15 +
+        simulatedScores.wfh * 0.1 +
+        simulatedScores.match * 0.1
+    ) * 10) / 10;
+
+    const improvement = simulatedFinalScore - originalFinalScore;
+    
+    // 獲取改進前後的評語
+    const originalComment = getOverallComment(originalFinalScore);
+    const simulatedComment = getOverallComment(simulatedFinalScore);
+    
+    // 計算各維度的改進幅度
+    const dimensionImprovements = {
+        salary: simulatedScores.salary - originalScores.salary,
+        time: simulatedScores.time - originalScores.time,
+        commute: simulatedScores.commute - originalScores.commute,
+        vacation: simulatedScores.vacation - originalScores.vacation,
+        wfh: simulatedScores.wfh - originalScores.wfh,
+        match: simulatedScores.match - originalScores.match
+    };
+    
+    // 找出改進幅度最大的維度
+    let maxImprovedDimension = '';
+    let maxImprovement = 0;
+    Object.entries(dimensionImprovements).forEach(([key, value]) => {
+        if (value > maxImprovement) {
+            maxImprovement = value;
+            maxImprovedDimension = key;
+        }
+    });
+    
+    const dimensionNames = {
+        salary: '薪資',
+        time: '工作時間',
+        commute: '通勤',
+        vacation: '休假',
+        wfh: '遠距工作',
+        match: '技能匹配'
+    };
+
+    document.getElementById('simulatedResult').innerHTML = `
+        <div class="simulation-comparison">
+            <div class="comparison-item original">
+                <div class="comparison-label">改進前</div>
+                <div class="simulated-score">${originalFinalScore}</div>
+                <div class="simulated-comment">${originalComment}</div>
+            </div>
+            <div class="comparison-arrow">→</div>
+            <div class="comparison-item simulated">
+                <div class="comparison-label">改進後</div>
+                <div class="simulated-score improved">${simulatedFinalScore}</div>
+                <div class="improvement-amount ${improvement >= 0 ? 'positive' : 'negative'}">
+                    ${improvement >= 0 ? '⬆️ +' : '⬇️ '}${Math.abs(improvement).toFixed(1)} 分
+                </div>
+                <div class="simulated-comment">${simulatedComment}</div>
+            </div>
+        </div>
+        ${maxImprovement > 0 ? `
+        <div class="improvement-highlights">
+            <div class="highlight-title">最大改進方向</div>
+            <div class="highlight-content">📈 <strong>${dimensionNames[maxImprovedDimension]}</strong> 提升了 <strong>${(maxImprovement).toFixed(1)}</strong> 分</div>
+        </div>
+        ` : ''}
+    `;
+    document.getElementById('simulatedResult').style.display = 'block';
 }
