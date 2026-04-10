@@ -1,3 +1,7 @@
+// 全局變數存儲原始分數（用於模擬功能）
+let globalOriginalScores = {};
+let globalOriginalFinalScore = 0;
+
 document.getElementById('workForm').addEventListener('submit', function(e) {
     e.preventDefault();
     calculateValue();
@@ -60,12 +64,23 @@ function calculateValue() {
     // 最終評分 (加權平均)
     const finalScore = Math.round((salaryScore * 0.3 + timeScore * 0.2 + commuteScore * 0.15 + vacationScore * 0.15 + wfhScore * 0.1 + matchScore * 0.1) * 10) / 10;
 
+    // 保存到全局變量供模擬功能使用
+    globalOriginalScores = {
+        salary: salaryScore,
+        time: timeScore,
+        commute: commuteScore,
+        vacation: vacationScore,
+        wfh: wfhScore,
+        match: matchScore
+    };
+    globalOriginalFinalScore = finalScore;
+
     // 顯示報告
     document.getElementById('finalScore').textContent = finalScore;
     createChart(salaryScore, timeScore, commuteScore, vacationScore, wfhScore, matchScore);
     showOverallAssessment(finalScore);
     showImprovementSuggestions(salaryScore, timeScore, commuteScore, vacationScore, wfhScore, matchScore);
-    createImprovementSimulator(salaryScore, timeScore, commuteScore, vacationScore, wfhScore, matchScore, finalScore);
+    createImprovementSimulator();
     document.getElementById('dimensions').innerHTML = `
         <div class="dimension">
             <div class="dimension-header">
@@ -341,7 +356,7 @@ function showImprovementSuggestions(salaryScore, timeScore, commuteScore, vacati
     `;
 }
 
-function createImprovementSimulator(originalSalaryScore, originalTimeScore, originalCommuteScore, originalVacationScore, originalWfhScore, originalMatchScore, originalFinalScore) {
+function createImprovementSimulator() {
     document.getElementById('simulatorSection').innerHTML = `
         <div class="simulator-title">
             <span class="emoji">🔮</span>
@@ -400,11 +415,13 @@ function createImprovementSimulator(originalSalaryScore, originalTimeScore, orig
     sliders.forEach(type => {
         const slider = document.getElementById(`${type}Slider`);
         const value = document.getElementById(`${type}Value`);
-        slider.addEventListener('input', function() {
-            value.textContent = this.value + '%';
-            // 實時更新視覺反饋
-            updateSliderFeedback(type, this.value);
-        });
+        if (slider && value) {
+            slider.addEventListener('input', function() {
+                value.textContent = this.value + '%';
+                // 實時更新視覺反饋
+                updateSliderFeedback(type, this.value);
+            });
+        }
     });
 }
 
@@ -434,15 +451,9 @@ function getOverallComment(score) {
 }
 
 function runSimulation() {
-    const originalScores = {
-        salary: arguments[0],
-        time: arguments[1],
-        commute: arguments[2],
-        vacation: arguments[3],
-        wfh: arguments[4],
-        match: arguments[5]
-    };
-    const originalFinalScore = arguments[6];
+    // 使用全局變量獲取原始分數
+    const originalScores = globalOriginalScores;
+    const originalFinalScore = globalOriginalFinalScore;
 
     const improvements = {
         salary: parseInt(document.getElementById('salarySlider').value) / 100,
