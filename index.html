@@ -7,92 +7,165 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f5f5f7;
-            color: #1d1d1f;
+            background-color: #f9fafb;
+            color: #111827;
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .container {
             background-color: #ffffff;
             border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             padding: 40px;
             max-width: 600px;
             width: 100%;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
         }
         h1 {
             text-align: center;
-            font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 30px;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            color: #111827;
+            letter-spacing: -0.025em;
         }
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         label {
             display: block;
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 8px;
+            color: #374151;
         }
-        input {
+        input, select {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #d2d2d7;
-            border-radius: 8px;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
             font-size: 16px;
             box-sizing: border-box;
+            transition: all 0.2s ease;
+            background-color: #ffffff;
+            color: #111827;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         }
         button {
             width: 100%;
-            padding: 14px;
-            background-color: #007aff;
+            padding: 16px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 18px;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
         }
         button:hover {
-            background-color: #0056cc;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
         }
         .report {
-            margin-top: 40px;
+            margin-top: 48px;
             display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .score {
             text-align: center;
-            font-size: 48px;
-            font-weight: 700;
-            color: #007aff;
-            margin-bottom: 20px;
+            font-size: 56px;
+            font-weight: 800;
+            color: #8b5cf6;
+            margin-bottom: 24px;
+            text-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
+        }
+        .dimensions {
+            display: grid;
+            gap: 16px;
         }
         .dimension {
-            margin-bottom: 20px;
-            padding: 16px;
-            background-color: #f9f9f9;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .dimension:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
         .dimension-header {
             display: flex;
             align-items: center;
             font-size: 18px;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
+            color: #1f2937;
         }
         .emoji {
-            font-size: 24px;
-            margin-right: 10px;
+            font-size: 28px;
+            margin-right: 12px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
         .comment {
-            font-size: 14px;
-            color: #6e6e73;
+            font-size: 15px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+        /* Dark mode styles */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #111827;
+                color: #f9fafb;
+            }
+            .container {
+                background-color: #1f2937;
+                border-color: #374151;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            }
+            h1 {
+                color: #f9fafb;
+            }
+            label {
+                color: #d1d5db;
+            }
+            input, select {
+                background-color: #374151;
+                border-color: #4b5563;
+                color: #f9fafb;
+            }
+            input:focus, select:focus {
+                border-color: #8b5cf6;
+            }
+            .dimension {
+                background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+                border-color: #6b7280;
+            }
+            .dimension-header {
+                color: #f9fafb;
+            }
+            .comment {
+                color: #9ca3af;
+            }
         }
     </style>
 </head>
